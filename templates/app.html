@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel='stylesheet' href='http://cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.3.1/fullcalendar.min.css' />
+    <script src='http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
+    <script src='http://cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment.min.js'></script>
+    <script src='http://cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.3.1/fullcalendar.min.js'></script>
+    <link rel='stylesheet' href='http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css' />
+    <script src='http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js'></script>
+
+    <script>
+
+        $(document).ready(function() {
+
+            // var curSource = 'http://localhost:5000/cal/';
+            // page is now ready, initialize the calendar...
+
+            $('#calendar').fullCalendar({
+                events: 'http://.../cal' // put your website url +/cal here
+
+            })
+
+        });
+
+    </script>
+
+</head>
+<body>
+    <nav class="navbar navbar-inverse">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">Calendar</a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container">
+
+      <div class="starter-template">
+        <div id='calendar'></div>
+      </div>
+    </div><!-- /.container -->
+
+    <div style="width:90%; margin:20px auto;"> 
+        <table class="table table-striped table-hover">
+            <tr>
+                <th>Weather Station</th>
+                <th>Site</th>
+                <th>Distance (approx.)</th>
+            </tr>
+            <tr>
+                <td>Blauvelt</td>
+                <td>WNAP</td>
+                <td>2.6 mi</td>
+            </tr>
+            <tr>
+                <td>Congers FD</td>
+                <td>HQ</td>
+                <td>1.7 mi</td>
+            </tr>
+            <tr>
+                <td>Crugers</td>
+                <td>TCQ</td>
+                <td>2.8 mi</td>
+            </tr>
+            <tr>
+                <td>Goshen</td>
+                <td>GQ</td>
+                <td>1.0 mi</td>
+            </tr>
+            <tr>
+                <td>Maybrook</td>
+                <td>MAP</td>
+                <td>1.0 mi</td>
+            </tr>
+            <tr>
+                <td>Maybrook</td>
+                <td>NWAP</td>
+                <td>11.0 mi</td>
+            </tr>
+            <tr>
+                <td>Wappingers Falls</td>
+                <td>OPAP</td>
+                <td>2.0 mi</td>
+            </tr>
+            <tr>
+                <td>Wappingers Falls</td>
+                <td>NPAP</td>
+                <td>2.0 mi</td>
+            </tr>
+            <tr>
+                <td>Wappingers Falls</td>
+                <td>CPQ</td>
+                <td>2.0 mi</td>
+            </tr>
+            <tr><td colspan="3" style="text-align:center">All data via the Wunderground API.</td></tr>
+        </table>
+    </div>
+</body>
+</html>
