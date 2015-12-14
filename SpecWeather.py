@@ -1,8 +1,9 @@
 from flask import Flask, jsonify, redirect, make_response, render_template
 from flask.ext import restful
 from flask.ext.sqlalchemy import SQLAlchemy
+from flask_restful import reqparse
 from datetime import datetime, timedelta, date
-from sqlalchemy import func
+from sqlalchemy import func, distinct, asc
 from flask.ext.cors import CORS
 import simplejson as json
 
@@ -11,6 +12,10 @@ app = Flask(__name__)
 api = restful.Api(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///weather.db'
 db = SQLAlchemy(app)
+
+parser = reqparse.RequestParser()
+parser.add_argument('start')
+parser.add_argument('end')
 
 CORS(app, resources=r'/*')
 
@@ -62,6 +67,81 @@ class byDayResource(restful.Resource):
 
 
 class allDayResource(restful.Resource):
+    def get(self):
+        # precip_dates = db.session.query(func.sum(WeatherUpdate.precipitation), WeatherUpdate).group_by(WeatherUpdate.location, func.extract('day',WeatherUpdate.date), func.extract('month', WeatherUpdate.date),func.extract('hour',WeatherUpdate.date)).all()
+        # precip_dates = db.session.query(WeatherUpdate.precipitation, WeatherUpdate).all()
+        locations = db.session.query(distinct(WeatherUpdate.location)).all()
+
+        args = parser.parse_args()
+        start = datetime.strptime(args['start'], '%Y-%m-%d')
+        end = datetime.strptime(args['end'], '%Y-%m-%d')
+
+        counter = 1
+        the_array = []
+        the_dict = {}
+
+        sort_dict = {}
+
+
+        for location in locations:
+            sort_dict[location] = {}
+            d = {}
+
+            precips = db.session.query(WeatherUpdate).filter(WeatherUpdate.location==location[0]).filter(WeatherUpdate.date >= start).filter(WeatherUpdate.date <= end).order_by(asc(WeatherUpdate.date)).all()
+
+            print len(precips)
+
+            for x in precips:
+                hash = str(x.date.year) + "-" + str(x.date.month) + "-" + str(x.date.day)
+                if hash in d:
+                    if x.date.hour in d[hash]:
+                        if d[hash][x.date.hour].precipitation < x.precipitation:
+                            d[hash][x.date.hour] = x
+                    else:
+                        d[hash][x.date.hour] = x
+                else:
+                    d[hash] = {x.date.hour: x}
+
+            # should now be sorted
+
+            for k in d:
+
+                precip = 0.0
+                for each in d[k]:
+                    precip += d[k][each].precipitation
+
+                first = d[k]
+
+                url = "/single/%s/%s/%s/%s/" % (first[first.keys()[0]].location,first[first.keys()[0]].date.year,first[first.keys()[0]].date.month,first[first.keys()[0]].date.day)
+
+                y = {'id': counter,
+                'title': str(precip) + "in" + ": " + str(first[first.keys()[0]].location),
+                'allDay': True,
+                'start' :first[first.keys()[0]].date.date().isoformat(),
+                # 'end':'',
+                'url': url,
+                'color': '',
+                'location':str(first[first.keys()[0]].location)}
+
+                if precip > 0.1:
+                    y['color'] = '#FF0000'
+                elif precip > 0:
+                    y['color'] = '#ff912f'
+
+                the_array.append(y)
+
+                counter += 1
+
+        # the_dict['events'] = the_array
+
+        # return jsonify(the_dict)
+        return make_response(json.dumps(the_array))
+
+
+
+
+
+class allDayResourceOLD(restful.Resource):
     def get(self):
         precip_dates = db.session.query(func.sum(WeatherUpdate.precipitation), WeatherUpdate).group_by(WeatherUpdate.location, func.extract('day',WeatherUpdate.date), func.extract('month', WeatherUpdate.date)).all()
 
